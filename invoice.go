@@ -3,7 +3,9 @@ package fivaldi
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	fixedwidth "github.com/omniboost/go-fixedwidth"
@@ -76,27 +78,7 @@ func (i Invoice) MarshalFixedWidth(spec fixedwidth.FieldSpec) ([]byte, error) {
 	bufs = append(bufs, buf)
 
 	for _, l := range i.InvoiceLines {
-		restap := Restap{
-			CompanyID:      Int(l.CompanyID),
-			Type:           "RESTAP",
-			CustomerNumber: Int(l.CustomerNumber),
-			InvoiceNumber:  Int(l.InvoiceNumber),
-			SalesLedger:    l.SalesLedger,
-			CostCenter1:    l.CostCenter1,
-			CostCenter2:    l.CostCenter2,
-			CostCenter3:    l.CostCenter3,
-			NetAmount:      l.NetAmount,
-			Sign:           l.Sign,
-			FCNetAmount:    l.FCNetAmount,
-			FCSign:         l.FCSign,
-			VATCode:        l.VATCode,
-			CostCenter4:    l.CostCenter4,
-			VATAmount:      l.VATAmount,
-			VATSign:        l.VATSign,
-			FCVATAmount:    l.FCVATAmount,
-			FCVATSign:      l.FCVATSign,
-			VATLedger:      l.VATLedger,
-		}
+		restap := i.invoiceLineToRestap(l)
 
 		buf, err := fixedwidth.Marshal(restap)
 		if err != nil {
@@ -109,28 +91,45 @@ func (i Invoice) MarshalFixedWidth(spec fixedwidth.FieldSpec) ([]byte, error) {
 	return buf, nil
 }
 
+func (i Invoice) invoiceLineToRestap(l InvoiceLine) Restap {
+	restap := Restap{
+		CompanyID:      Int(i.CompanyID),
+		Type:           "RESTAP",
+		CustomerNumber: Int(i.CustomerNumber),
+		InvoiceNumber:  Int(i.InvoiceNumber),
+		SalesLedger:    l.SalesLedger,
+		CostCenter1:    l.CostCenter1,
+		CostCenter2:    l.CostCenter2,
+		CostCenter3:    l.CostCenter3,
+		NetAmount:      l.NetAmount,
+		Sign:           l.NetAmount.Sign(),
+		FCNetAmount:    l.FCNetAmount,
+		FCSign:         l.FCNetAmount.Sign(),
+		VATCode:        l.VATCode,
+		CostCenter4:    l.CostCenter4,
+		VATAmount:      l.VATAmount,
+		VATSign:        l.VATAmount.Sign(),
+		FCVATAmount:    l.FCVATAmount,
+		FCVATSign:      l.FCVATAmount.Sign(),
+		VATLedger:      l.VATLedger,
+	}
+	return restap
+}
+
 type InvoiceLines []InvoiceLine
 
 type InvoiceLine struct {
-	CompanyID      int
-	Type           Type // always RESLAS
-	CustomerNumber int  // Customer number in Fivaldi
-	InvoiceNumber  int
-	SalesLedger    string
-	CostCenter1    string
-	CostCenter2    string
-	CostCenter3    string
-	NetAmount      Amount
-	Sign           Sign
-	FCNetAmount    Amount
-	FCSign         Sign
-	VATCode        string
-	CostCenter4    string
-	VATAmount      Amount
-	VATSign        Sign
-	FCVATAmount    Amount
-	FCVATSign      Sign
-	VATLedger      string
+	SalesLedger string
+	CostCenter1 string
+	CostCenter2 string
+	CostCenter3 string
+	NetAmount   Amount
+	FCNetAmount Amount
+	VATCode     string
+	CostCenter4 string
+	VATAmount   Amount
+	FCVATAmount Amount
+	VATLedger   string
 }
 
 type Reslas struct {
@@ -245,14 +244,29 @@ func (d Date) MarshalFixedWidth(spec fixedwidth.FieldSpec) ([]byte, error) {
 type Amount float64
 
 func (a Amount) String() string {
-	return fmt.Sprintf("%.2f", a)
+	s := fmt.Sprintf("%.2f", a)
+	return strings.Replace(s, ".", "", -1)
+}
+
+func (a Amount) Abs() Amount {
+	aa := math.Abs(float64(a))
+	return Amount(aa)
 }
 
 func (a Amount) MarshalFixedWidth(spec fixedwidth.FieldSpec) ([]byte, error) {
+	aa := a.Abs()
 	length := strconv.Itoa(spec.EndPos - spec.StartPos + 1)
 	format := "%0" + length + "v"
-	padded := fmt.Sprintf(format, a.String())
+	padded := fmt.Sprintf(format, aa.String())
 	return []byte(padded), nil
+}
+
+func (a Amount) Sign() Sign {
+	if a < 0 {
+		return '-'
+	}
+
+	return ' '
 }
 
 type Sign byte

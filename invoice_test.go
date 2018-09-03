@@ -52,7 +52,17 @@ func TestInvoiceMarshalling(t *testing.T) {
 		Currency:                "EUR",
 		InvoiceLines: fivaldi.InvoiceLines{
 			{
-				CompanyID: 12,
+				SalesLedger: "SL",
+				CostCenter1: "CC1",
+				CostCenter2: "CC2",
+				CostCenter3: "CC3",
+				NetAmount:   fivaldi.Amount(123.45),
+				FCNetAmount: fivaldi.Amount(-123.45),
+				VATCode:     "VC",
+				CostCenter4: "CC4",
+				VATAmount:   fivaldi.Amount(987.65),
+				FCVATAmount: fivaldi.Amount(-987.65),
+
 				VATLedger: "12345678",
 			},
 		},
