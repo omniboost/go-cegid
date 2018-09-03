@@ -34,3 +34,34 @@ func TestReslasMarshalling(t *testing.T) {
 
 	fmt.Println(string(data))
 }
+
+func TestInvoiceMarshalling(t *testing.T) {
+	invoice := fivaldi.Invoice{
+		CompanyID:               12,
+		CustomerNumber:          23,
+		InvoiceNumber:           34,
+		RefundableInvoiceNumber: 45,
+		AccountingPeriod:        fivaldi.Period{time.Now()},
+		InvoiceDate:             fivaldi.Date{time.Now()},
+		PaymentTerms:            56,
+		CashDiscountDate:        fivaldi.Date{time.Now()},
+		CashDiscountPercentage:  99,
+		InvoiceDueDate:          fivaldi.Date{time.Now().AddDate(0, 0, 14)},
+		GrossAmount:             fivaldi.Amount(66666.6),
+		Sign:                    '-',
+		Currency:                "EUR",
+		InvoiceLines: fivaldi.InvoiceLines{
+			{
+				CompanyID: 12,
+				VATLedger: "12345678",
+			},
+		},
+	}
+
+	data, err := fixedwidth.Marshal(invoice)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(string(data))
+}

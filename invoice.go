@@ -1,6 +1,7 @@
 package fivaldi
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"time"
@@ -9,13 +10,127 @@ import (
 )
 
 type Invoice struct {
-	// Customer Customer
-	Lines InvoiceLines
+	CompanyID               int
+	CustomerNumber          int
+	InvoiceNumber           int
+	RefundableInvoiceNumber int
+	AccountingPeriod        Period
+	InvoiceDate             Date
+	PaymentTerms            int
+	CashDiscountDate        Date
+	CashDiscountPercentage  int
+	InvoiceDueDate          Date
+	GrossAmount             Amount
+	Sign                    Sign
+	Currency                string
+	FCGrossAmount           Amount
+	FCSign                  Sign
+	FCExchangeRate          Decimal
+	AccountReceivableLedger string
+	Reference               string
+	Description             string
+	CustomerName1           string
+	CustomerName2           string
+	Address1                string
+	Address2                string
+	PostalCode              string
+	Country                 string
+	InvoiceLines            InvoiceLines
+}
+
+func (i Invoice) MarshalFixedWidth(spec fixedwidth.FieldSpec) ([]byte, error) {
+	bufs := [][]byte{}
+
+	reslas := Reslas{
+		CompanyID:               Int(i.CompanyID),
+		Type:                    "RESLAS",
+		CustomerNumber:          Int(i.CustomerNumber),
+		InvoiceNumber:           Int(i.InvoiceNumber),
+		RefundableInvoiceNumber: Int(i.RefundableInvoiceNumber),
+		AccountingPeriod:        i.AccountingPeriod,
+		InvoiceDate:             i.InvoiceDate,
+		PaymentTerms:            Int(i.PaymentTerms),
+		CashDiscountDate:        i.CashDiscountDate,
+		InvoiceDueDate:          i.InvoiceDueDate,
+		GrossAmount:             i.GrossAmount,
+		Sign:                    i.Sign,
+		Currency:                i.Currency,
+		FCGrossAmount:           i.FCGrossAmount,
+		FCSign:                  i.FCSign,
+		FCExchangeRate:          i.FCExchangeRate,
+		AccountReceivableLedger: i.AccountReceivableLedger,
+		Reference:               i.Reference,
+		Description:             i.Description,
+		CustomerName1:           i.CustomerName1,
+		CustomerName2:           i.CustomerName2,
+		Address1:                i.Address1,
+		Address2:                i.Address2,
+		PostalCode:              i.PostalCode,
+		Country:                 i.Country,
+	}
+
+	buf, err := fixedwidth.Marshal(reslas)
+	if err != nil {
+		return buf, err
+	}
+	bufs = append(bufs, buf)
+
+	for _, l := range i.InvoiceLines {
+		restap := Restap{
+			CompanyID:      Int(l.CompanyID),
+			Type:           "RESTAP",
+			CustomerNumber: Int(l.CustomerNumber),
+			InvoiceNumber:  Int(l.InvoiceNumber),
+			SalesLedger:    l.SalesLedger,
+			CostCenter1:    l.CostCenter1,
+			CostCenter2:    l.CostCenter2,
+			CostCenter3:    l.CostCenter3,
+			NetAmount:      l.NetAmount,
+			Sign:           l.Sign,
+			FCNetAmount:    l.FCNetAmount,
+			FCSign:         l.FCSign,
+			VATCode:        l.VATCode,
+			CostCenter4:    l.CostCenter4,
+			VATAmount:      l.VATAmount,
+			VATSign:        l.VATSign,
+			FCVATAmount:    l.FCVATAmount,
+			FCVATSign:      l.FCVATSign,
+			VATLedger:      l.VATLedger,
+		}
+
+		buf, err := fixedwidth.Marshal(restap)
+		if err != nil {
+			return buf, err
+		}
+		bufs = append(bufs, buf)
+	}
+
+	buf = bytes.Join(bufs, []byte("\r\n"))
+	return buf, nil
 }
 
 type InvoiceLines []InvoiceLine
 
 type InvoiceLine struct {
+	CompanyID      int
+	Type           Type // always RESLAS
+	CustomerNumber int  // Customer number in Fivaldi
+	InvoiceNumber  int
+	SalesLedger    string
+	CostCenter1    string
+	CostCenter2    string
+	CostCenter3    string
+	NetAmount      Amount
+	Sign           Sign
+	FCNetAmount    Amount
+	FCSign         Sign
+	VATCode        string
+	CostCenter4    string
+	VATAmount      Amount
+	VATSign        Sign
+	FCVATAmount    Amount
+	FCVATSign      Sign
+	VATLedger      string
 }
 
 type Reslas struct {
@@ -49,25 +164,26 @@ type Reslas struct {
 }
 
 type Restap struct {
-	CompanyID      int
-	Type           Type // always RESLAS
-	CustomerNumber int  // Customer number in Fivaldi
-	InvoiceNumber  int
-	SalesLedger    string
-	CostCenter1    string
-	CostCenter2    string
-	CostCenter3    string
-	NetAmount      Amount
-	Sign           Sign
-	FCNetAmount    Amount
-	FCSign         Sign
-	VATCode        string
-	CostCenter4    string
-	VATAmount      Amount
-	VATSign        Sign
-	FCVATAmount    Amount
-	FCVATSign      Sign
-	VATLedger      string
+	// fixed:"{startPos},{endPos}"
+	CompanyID      Int    `fixed:"1,6"`
+	Type           Type   `fixed:"7,12"`  // always RESTAP
+	CustomerNumber Int    `fixed:"13,22"` // Customer number in Fivaldi
+	InvoiceNumber  Int    `fixed:"23,30"`
+	SalesLedger    string `fixed:"31,38"`
+	CostCenter1    string `fixed:"39,46"`
+	CostCenter2    string `fixed:"47,54"`
+	CostCenter3    string `fixed:"55,62"`
+	NetAmount      Amount `fixed:"63,80"`
+	Sign           Sign   `fixed:"81,81"`
+	FCNetAmount    Amount `fixed:"82,99"`
+	FCSign         Sign   `fixed:"100,100"`
+	VATCode        string `fixed:"101,101"`
+	CostCenter4    string `fixed:"102,109"`
+	VATAmount      Amount `fixed:"110,127"`
+	VATSign        Sign   `fixed:"128,128"`
+	FCVATAmount    Amount `fixed:"129,146"`
+	FCVATSign      Sign   `fixed:"147,147"`
+	VATLedger      string `fixed:"148,156"`
 }
 
 type Int int
