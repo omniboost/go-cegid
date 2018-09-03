@@ -23,10 +23,8 @@ type Invoice struct {
 	CashDiscountPercentage  int
 	InvoiceDueDate          Date
 	GrossAmount             Amount
-	Sign                    Sign
 	Currency                string
 	FCGrossAmount           Amount
-	FCSign                  Sign
 	FCExchangeRate          Decimal
 	AccountReceivableLedger string
 	Reference               string
@@ -55,10 +53,10 @@ func (i Invoice) MarshalFixedWidth(spec fixedwidth.FieldSpec) ([]byte, error) {
 		CashDiscountDate:        i.CashDiscountDate,
 		InvoiceDueDate:          i.InvoiceDueDate,
 		GrossAmount:             i.GrossAmount,
-		Sign:                    i.Sign,
+		Sign:                    i.GrossAmount.Sign(),
 		Currency:                i.Currency,
 		FCGrossAmount:           i.FCGrossAmount,
-		FCSign:                  i.FCSign,
+		FCSign:                  i.FCGrossAmount.Sign(),
 		FCExchangeRate:          i.FCExchangeRate,
 		AccountReceivableLedger: i.AccountReceivableLedger,
 		Reference:               i.Reference,
