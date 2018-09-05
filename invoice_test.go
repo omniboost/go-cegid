@@ -23,7 +23,6 @@ func TestReslasMarshalling(t *testing.T) {
 		CashDiscountPercentage:  99,
 		InvoiceDueDate:          fivaldi.Date{time.Now().AddDate(0, 0, 14)},
 		GrossAmount:             fivaldi.Amount(66666.6),
-		Sign:                    '-',
 		Currency:                "EUR",
 	}
 
@@ -48,7 +47,6 @@ func TestInvoiceMarshalling(t *testing.T) {
 		CashDiscountPercentage:  99,
 		InvoiceDueDate:          fivaldi.Date{time.Now().AddDate(0, 0, 14)},
 		GrossAmount:             fivaldi.Amount(66666.6),
-		Sign:                    '-',
 		Currency:                "EUR",
 		InvoiceLines: fivaldi.InvoiceLines{
 			{
