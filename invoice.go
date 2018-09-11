@@ -254,6 +254,11 @@ type Date struct {
 	time.Time
 }
 
+// used for csv export
+func (d Date) MarshalText() ([]byte, error) {
+	return []byte(d.String()), nil
+}
+
 func (d Date) String() string {
 	return d.Time.Format("20060102")
 }
@@ -330,7 +335,7 @@ type Amount float64
 
 func (a Amount) String() string {
 	s := fmt.Sprintf("%.2f", a)
-	return strings.Replace(s, ".", "", -1)
+	return s
 }
 
 func (a Amount) Abs() Amount {
@@ -338,11 +343,19 @@ func (a Amount) Abs() Amount {
 	return Amount(aa)
 }
 
+// used for csv export
+func (a Amount) MarshalText() ([]byte, error) {
+	s := a.String()
+	s = strings.Replace(a.String(), ".", ",", -1)
+	return []byte(s), nil
+}
+
 func (a Amount) MarshalFixedWidth(spec fixedwidth.FieldSpec) ([]byte, error) {
 	aa := a.Abs()
 	length := strconv.Itoa(spec.EndPos - spec.StartPos + 1)
 	format := "%0" + length + "v"
-	padded := fmt.Sprintf(format, aa.String())
+	s := strings.Replace(aa.String(), ".", "", -1)
+	padded := fmt.Sprintf(format, s)
 	return []byte(padded), nil
 }
 

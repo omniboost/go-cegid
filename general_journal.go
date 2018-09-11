@@ -1,6 +1,7 @@
 package fivaldi
 
 import (
+	"encoding"
 	"fmt"
 )
 
@@ -116,29 +117,43 @@ func (l GeneralJournalCSVLine) ToStrings() []string {
 }
 
 func (l GeneralJournalCSVLine) ToMap() map[string]string {
-	m := map[string]string{
-		"PVM":           fmt.Sprint(l.RecordDate),
-		"TILI":          fmt.Sprint(l.AccountNumber),
-		"TOSITE":        fmt.Sprint(l.VoucherNumber),
-		"SK1":           fmt.Sprint(l.CostCenter1),
-		"SK2":           fmt.Sprint(l.CostCenter2),
-		"SK3":           fmt.Sprint(l.CostCenter3),
-		"SK4":           fmt.Sprint(l.CostCenter4),
-		"SUMMA":         fmt.Sprint(l.Amount),
-		"SENTIT":        fmt.Sprint(l.AmountInCents),
-		"SELITE":        fmt.Sprint(l.Description),
-		"VEROKANTA":     fmt.Sprint(l.VATCode),
-		"VEROTILI":      fmt.Sprint(l.VATAccountNumber),
-		"VEROTILI2":     fmt.Sprint(l.VATAccountNumber2),
-		"VEROSUMMA":     fmt.Sprint(l.VATAmount),
-		"VEROSENTIT":    fmt.Sprint(l.VATAmountInCents),
-		"STATUS":        fmt.Sprint(l.Status),
-		"NETTOPVM":      fmt.Sprint(l.NetDate),
-		"ASIAKASTUNNUS": fmt.Sprint(l.CustomerID),
-		"VIENTILAJI":    fmt.Sprint(l.ExportTypeID),
-		"LASKUNO":       fmt.Sprint(l.InvoiceNumber),
-		"YT":            fmt.Sprint(l.FivaldiCompanyID),
-		"LAJI":          fmt.Sprint(l.VoucherType),
+	mi := map[string]interface{}{
+		"PVM":           l.RecordDate,
+		"TILI":          l.AccountNumber,
+		"TOSITE":        l.VoucherNumber,
+		"SK1":           l.CostCenter1,
+		"SK2":           l.CostCenter2,
+		"SK3":           l.CostCenter3,
+		"SK4":           l.CostCenter4,
+		"SUMMA":         l.Amount,
+		"SENTIT":        l.AmountInCents,
+		"SELITE":        l.Description,
+		"VEROKANTA":     l.VATCode,
+		"VEROTILI":      l.VATAccountNumber,
+		"VEROTILI2":     l.VATAccountNumber2,
+		"VEROSUMMA":     l.VATAmount,
+		"VEROSENTIT":    l.VATAmountInCents,
+		"STATUS":        l.Status,
+		"NETTOPVM":      l.NetDate,
+		"ASIAKASTUNNUS": l.CustomerID,
+		"VIENTILAJI":    l.ExportTypeID,
+		"LASKUNO":       l.InvoiceNumber,
+		"YT":            l.FivaldiCompanyID,
+		"LAJI":          l.VoucherType,
+	}
+
+	m := map[string]string{}
+	for k, v := range mi {
+		marshaller, ok := v.(encoding.TextMarshaler)
+		if ok {
+			b, err := marshaller.MarshalText()
+			if err == nil {
+				m[k] = string(b)
+				continue
+			}
+		}
+
+		m[k] = fmt.Sprint(v)
 	}
 
 	if m["NETTOPVM"] == "00010101" {
