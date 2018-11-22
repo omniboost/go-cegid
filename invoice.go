@@ -19,7 +19,7 @@ type Invoice struct {
 	RefundableInvoiceNumber int
 	AccountingPeriod        Period
 	InvoiceDate             ShortDate
-	PaymentTerms            int
+	PaymentTerms            string
 	CashDiscountDate        ShortDate
 	CashDiscountPercentage  int
 	InvoiceDueDate          ShortDate
@@ -50,7 +50,7 @@ func (i Invoice) MarshalFixedWidth(spec fixedwidth.FieldSpec) ([]byte, error) {
 		RefundableInvoiceNumber: Int(i.RefundableInvoiceNumber),
 		AccountingPeriod:        i.AccountingPeriod,
 		InvoiceDate:             i.InvoiceDate,
-		PaymentTerms:            Int(i.PaymentTerms),
+		PaymentTerms:            i.PaymentTerms,
 		CashDiscountDate:        i.CashDiscountDate,
 		InvoiceDueDate:          i.InvoiceDueDate,
 		GrossAmount:             i.GrossAmount,
@@ -140,7 +140,7 @@ type Reslas struct {
 	RefundableInvoiceNumber Int       `fixed:"31,38"`
 	AccountingPeriod        Period    `fixed:"39,44"`
 	InvoiceDate             ShortDate `fixed:"45,50"`
-	PaymentTerms            Int       `fixed:"51,54"`
+	PaymentTerms            string    `fixed:"51,54"`
 	CashDiscountDate        ShortDate `fixed:"55,60"`
 	CashDiscountPercentage  Int       `fixed:"61,62"`
 	InvoiceDueDate          ShortDate `fixed:"63,68"`
