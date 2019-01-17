@@ -26,7 +26,7 @@ type Invoice struct {
 	GrossAmount             Amount
 	Currency                string
 	FCGrossAmount           Amount
-	FCExchangeRate          Decimal
+	FCExchangeRate          string
 	AccountReceivableLedger string
 	Reference               string
 	Description             string
@@ -149,7 +149,7 @@ type Reslas struct {
 	Currency                string    `fixed:"88,90"`
 	FCGrossAmount           Amount    `fixed:"91,108"`
 	FCSign                  Sign      `fixed:"109,109"`
-	FCExchangeRate          Decimal   `fixed:"110,125"`
+	FCExchangeRate          string    `fixed:"110,125"`
 	AccountReceivableLedger string    `fixed:"126,133"`
 	Reference               string    `fixed:"134,153"`
 	Description             string    `fixed:"154,253"`
