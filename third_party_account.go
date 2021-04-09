@@ -2,7 +2,7 @@ package cegid
 
 // fixed:"{startPos},{endPos},[{alignment},[{padChar}]]"
 type ThirdPartyAccount struct {
-	FIXE               string `fixed:"1,1"`
+	FIXE               string `fixed:"1,3"`
 	IDENTIFIANT        string `fixed:"4,6"`
 	CODE               string `fixed:"7,23"`
 	LIBELLE            string `fixed:"24,58"`
@@ -63,13 +63,13 @@ type ThirdPartyAccount struct {
 	CONFIDENTIEL       string `fixed:"886,886"`
 	CORRESP1           string `fixed:"887,903"`
 	CORRESP2           string `fixed:"904,920"`
-	ESCOMPTE           string `fixed:"921,940"`
-	REMISE             string `fixed:"941,960"`
+	ESCOMPTE           string `fixed:"921,940,right"`
+	REMISE             string `fixed:"941,960,right"`
 	FACTURE            string `fixed:"961,977"`
 	JURIDIQUE          string `fixed:"978,980"`
-	CREDITDEMANDE      string `fixed:"981,1000"`
-	CREDITACCORDE      string `fixed:"1001,1020"`
-	CREDITPLAFOND      string `fixed:"1021,1040"`
+	CREDITDEMANDE      string `fixed:"981,1000,right"`
+	CREDITACCORDE      string `fixed:"1001,1020,right"`
+	CREDITPLAFOND      string `fixed:"1021,1040,right"`
 	FERME              string `fixed:"1041,1041"`
 	FACTUREHT          string `fixed:"1042,1042"`
 	SOCIETEGROUPEBE    string `fixed:"1043,1059"`
