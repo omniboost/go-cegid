@@ -4,7 +4,7 @@ package cegid
 type Entry struct {
 	JOURNAL               string `fixed:"1,3"`
 	DATECOMPTABLE         string `fixed:"4,11"`
-	TYPEPIECE             string `fixed:"12,13"`
+	TYPE_PIECE            string `fixed:"12,13"`
 	GENERAL               string `fixed:"14,30"`
 	TYPE_CPTE             string `fixed:"31,31"`
 	AUXILIAIRE_OU_SECTION string `fixed:"32,48"`
