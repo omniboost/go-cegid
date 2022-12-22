@@ -1,5 +1,22 @@
 package cegid
 
+type Header struct {
+	FIXE                   string `fixed:"1,3"`
+	IDENTIFIANT            string `fixed:"4,5"`
+	ORIGINE_FICHIER        string `fixed:"6,8"`
+	TYPE_FICHIER           string `fixed:"9,11"`
+	FORMAT                 string `fixed:"12,14"`
+	CODE_EXO_CLOS          string `fixed:"15,17"`
+	DATE_BASCULE           string `fixed:"18,25"`
+	DATE_ARRETE_PERIODIQUE string `fixed:"26,33"`
+	VERSION                string `fixed:"34,36"`
+	NO_DOSSIER_CAB         string `fixed:"37,41"`
+	DATE_HEURE             string `fixed:"42,53"`
+	UTILISATEUR            string `fixed:"54,88"`
+	RAISON_SOCIALE         string `fixed:"89,123"`
+	REPRISE                string `fixed:"124,127"`
+}
+
 // fixed:"{startPos},{endPos},[{alignment},[{padChar}]]"
 type Entry struct {
 	JOURNAL               string `fixed:"1,3"`
